@@ -5,12 +5,24 @@
 <table>
     <% for (var i in users) { %>
     <tr>
+        <% if (session.user) { %>
+        <% if(users[i].accepted || session.user.isAdmin) {%>
         <td>
             <a href="/users/<%= users[i].id %>" ><%= users[i].username %></a>
             <%= users[i].isAdmin ? "(admin)" : "" %>
         </td>
 
-        <% if (session.user) { %>
+
+        <% if(!users[i].accepted && session.user.isAdmin){ %>
+            <td>
+                <form method="post" action="/users?_method=PUT&id=<%= users[i].id %>">
+                    <input class="button" type="submit" value="Accept">
+                </form>
+            </td>
+
+        <% } %>
+
+
 
             <% if (session.user.isAdmin || session.user.id === users[i].id) { %>
                 <td>
@@ -27,7 +39,9 @@
             <% } %>
 
         <% } %>
+        <% } %>
     </tr>
+
     <%  } %>
 </table>
 

@@ -3,9 +3,9 @@ const {models} = require("../models");
 const url = require('url');
 
 
-// This variable contains the maximum inactivity time allowed without 
+// This variable contains the maximum inactivity time allowed without
 // making requests.
-// If the logged user does not make any new request during this time, 
+// If the logged user does not make any new request during this time,
 // then the user's session will be closed.
 // The value is in milliseconds.
 // 5 minutes.
@@ -99,7 +99,7 @@ exports.adminAndNotMyselfRequired = function(req, res, next){
 /*
  * User authentication: Checks that the user is registered.
  *
- * Return a Promise that searches a user with the given login, and checks that 
+ * Return a Promise that searches a user with the given login, and checks that
  * the password is correct.
  * If the authentication is correct, then the promise is satisfied and returns
  * an object with the User.
@@ -111,7 +111,11 @@ const authenticate = (login, password) => {
     return models.user.findOne({where: {username: login}})
     .then(user => {
         if (user && user.verifyPassword(password)) {
-            return user;
+            if(user.accepted) {
+                return user;
+            }else{
+                return -1;
+            }
         } else {
             return null;
         }
@@ -145,10 +149,10 @@ exports.create = (req, res, next) => {
 
     authenticate(login, password)
     .then(user => {
-        if (user) {
+        if (user && user!==-1) {
             // Create req.session.user and save id and username fields.
-            // The existence of req.session.user indicates that the session exists.
-            // I also save the moment when the session will expire due to inactivity.
+            // The existence of req.session.user indicates that the session exists.
+            // I also save the moment when the session will expire due to inactivity.
             req.session.user = {
                 id: user.id,
                 username: user.username,
@@ -156,7 +160,10 @@ exports.create = (req, res, next) => {
                 expires: Date.now() + maxIdleTime
             };
 
-            res.redirect(redir); 
+            res.redirect(redir);
+        }else if(user===-1){
+            req.flash('error', 'You have to wait until admin user accepts your account');
+            res.render('session/new', {redir});
         } else {
             req.flash('error', 'Authentication has failed. Retry it again.');
             res.render('session/new', {redir});

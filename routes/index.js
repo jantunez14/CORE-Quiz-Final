@@ -74,14 +74,17 @@ router.get('/users/:userId(\\d+)',
 router.get('/users/new',
     userController.new);
 
+router.post('/users', userController.create);
+
+
 if (!!process.env.QUIZ_OPEN_REGISTER) {
-  router.post('/users',
-      userController.create);
+  router.put('/users',
+      userController.accept);
 } else {
-  router.post('/users',
+  router.put('/users',
       sessionController.loginRequired,
       sessionController.adminRequired,
-      userController.create);
+      userController.accept);
 }
 
 router.get('/users/:userId(\\d+)/edit',
@@ -154,6 +157,10 @@ router.put('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)',
     sessionController.loginRequired,
     quizController.adminOrAuthorRequired,
     tipController.update);
+
+// Mejoras
+router.get('/search/:keyword', quizController.search);
+
 
 
 module.exports = router;

@@ -286,3 +286,12 @@ exports.randomcheck = (req, res, next) => {
 
     res.render('quizzes/random_result', {result, score,answer});
 };
+
+
+
+/*=========================Mejoras============================*/
+
+exports.search = (req,res, next) => {
+    let {search} = req;
+    console.log("imprimir" + search);
+};

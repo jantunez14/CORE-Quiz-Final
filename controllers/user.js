@@ -76,10 +76,11 @@ exports.new = (req, res, next) => {
 exports.create = (req, res, next) => {
 
     const {username, password} = req.body;
-
+    const accepted = false;
     const user = models.user.build({
         username,
-        password
+        password,
+        accepted
     });
 
     // Save into the data base
@@ -104,6 +105,29 @@ exports.create = (req, res, next) => {
     .catch(error => next(error));
 };
 
+// PUT /users/accept
+exports.accept = (req, res, next) => {
+
+    const id = req.query.id;
+    models.user.findByPk(id)
+        .then(user => {
+            user.accepted = true;
+
+            user.save({fields: ["accepted"]})
+                .then(user => {
+                    req.flash('success', 'User accepted successfully.');
+                    res.redirect('/users/' + user.id);
+                })
+                .catch(Sequelize.ValidationError, error => {
+                    req.flash('error', 'There are errors in the form:');
+                    error.errors.forEach(({message}) => req.flash('error', message));
+                    res.render('users/edit', {user});
+                })
+                .catch(error => next(error));
+        })
+        .catch(error => next(error));
+
+};
 
 // GET /users/:userId/edit
 exports.edit = (req, res, next) => {
