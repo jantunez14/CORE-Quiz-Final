@@ -192,17 +192,44 @@ exports.destroy = (req, res, next) => {
 /*=========================Mejoras============================*/
 
 exports.showUsers = (req, res, next) => {
+
+    req.session.correct = req.session.correct || false;
+    req.session.incorrect = req.session.incorrect || false;
+    req.session.streak = req.session.streak || false;
+
     const sort = req.query.sortBy;
     let order;
+    var sentido;
     if(sort==='correct'){
-        order=[['correctAnswers', 'DESC']];
+        req.session.correct = !req.session.correct;
+        if(req.session.correct){
+            sentido = 'DESC';
+        }else{
+            sentido = 'ASC';
+        }
+        order=[['correctAnswers', sentido]];
     }
+
     if(sort==='incorrect'){
-        order=[['incorrectAnswers', 'DESC']];
+        req.session.incorrect = !req.session.incorrect;
+        if(req.session.incorrect){
+            sentido = 'DESC';
+        }else{
+            sentido = 'ASC';
+        }
+        order=[['incorrectAnswers', sentido]];
     }
+
     if(sort==='streak'){
-        order=[['maxStreak', 'DESC']];
+        req.session.streak = !req.session.streak;
+        if(req.session.streak){
+            sentido = 'DESC';
+        }else{
+            sentido = 'ASC';
+        }
+        order=[['maxStreak', sentido]];
     }
+
     let getNext = () => {
         models.user.findAll({
             order: order

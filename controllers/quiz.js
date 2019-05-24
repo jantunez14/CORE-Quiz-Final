@@ -285,7 +285,7 @@ exports.randomcheck = (req, res, next) => {
     const {quiz, query} = req;
     let id = quiz.id;
     let answer = query.answer;
-    const userId = req.session.user.id;
+
 
     if (answer === quiz.answer){
         result = true;
@@ -296,26 +296,31 @@ exports.randomcheck = (req, res, next) => {
     }
     score = req.session.scoreSession;
 
-    models.user.findByPk(userId)
-        .then(user=>{
-           if(result){
-               user.correctAnswers++;
-               if(score>user.maxStreak){
-                   user.maxStreak=score;
-               }
-           }else{
-               user.incorrectAnswers++;
-               req.session.scoreSession=0;
-           }
-           user.save({fields: ["correctAnswers","incorrectAnswers","maxStreak"]})
-               .then(()=> res.render('quizzes/random_result', {result, score,answer}))
-               .catch(Sequelize.ValidationError, error => {
-                   req.flash('error', 'Error:');
-                   error.errors.forEach(({message}) => req.flash('error', message));
-               })
-               .catch(error => next(error));
-        });
 
+    if(req.session.user) {
+        const userId = req.session.user.id;
+        models.user.findByPk(userId)
+            .then(user => {
+                if (result) {
+                    user.correctAnswers++;
+                    if (score > user.maxStreak) {
+                        user.maxStreak = score;
+                    }
+                } else {
+                    user.incorrectAnswers++;
+                    req.session.scoreSession = 0;
+                }
+                user.save({fields: ["correctAnswers", "incorrectAnswers", "maxStreak"]})
+                    .then(() => res.render('quizzes/random_result', {result, score, answer}))
+                    .catch(Sequelize.ValidationError, error => {
+                        req.flash('error', 'Error:');
+                        error.errors.forEach(({message}) => req.flash('error', message));
+                    })
+                    .catch(error => next(error));
+            });
+    }else{
+        res.render('quizzes/random_result', {result, score, answer});
+    }
 };
 
 

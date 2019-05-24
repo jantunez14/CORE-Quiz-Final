@@ -1,11 +1,5 @@
 <h1>Top users</h1>
 
-
-Sort by:
-
-
-
-
 <table border="1">
     <tr>
         <th>Username</th>
@@ -15,13 +9,14 @@ Sort by:
     </tr>
 
     <% for(var i in usuarios){ %>
-        <tr>
-            <td> <%= usuarios[i].username %> </td>
-            <td> <%= usuarios[i].correctAnswers %> </td>
-            <td> <%= usuarios[i].incorrectAnswers %> </td>
-            <td> <%= usuarios[i].maxStreak %> </td>
-        </tr>
-
+        <% if (usuarios[i].accepted) {%>
+            <tr>
+                <td> <%= usuarios[i].username %> </td>
+                <td> <%= usuarios[i].correctAnswers || 0 %> </td>
+                <td> <%= usuarios[i].incorrectAnswers || 0 %> </td>
+                <td> <%= usuarios[i].maxStreak || 0 %> </td>
+            </tr>
+        <% } %>
     <% } %>
 
 
