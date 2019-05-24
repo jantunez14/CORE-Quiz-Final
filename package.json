@@ -11,6 +11,7 @@
     "migrate_win": "sequelize db:migrate --url %DATABASE_URL%",
     "seed_win": "sequelize db:seed:all --url %DATABASE_URL%",
     "open_heroku": "heroku open",
+    "set_addon": "heroku addons:add heroku-postgresql",
     "migrate_heroku": "heroku run npx sequelize db:migrate --url \\$DATABASE_URL",
     "seed_heroku": "heroku run npx sequelize db:seed:all --url \\$DATABASE_URL",
     "reset_heroku": "heroku pg:reset DATABASE",

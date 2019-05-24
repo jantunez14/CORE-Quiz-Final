@@ -13,14 +13,20 @@ module.exports = {
                 salt: 'aaaa',
                 isAdmin: true,
                 createdAt: new Date(), updatedAt: new Date(),
-                accepted: true
+                accepted: true,
+                correctAnswers: 0,
+                incorrectAnswers: 0,
+                maxStreak: 0
             },
             {
                 username: 'pepe',
                 password: crypt.encryptPassword('5678', 'bbbb'),
                 salt: 'bbbb',
                 createdAt: new Date(), updatedAt: new Date(),
-                accepted: true
+                accepted: true,
+                correctAnswers: 0,
+                incorrectAnswers: 0,
+                maxStreak: 0
             }
         ]);
     },

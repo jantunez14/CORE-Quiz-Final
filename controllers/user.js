@@ -77,10 +77,14 @@ exports.create = (req, res, next) => {
 
     const {username, password} = req.body;
     const accepted = false;
+
     const user = models.user.build({
         username,
         password,
-        accepted
+        accepted,
+        correctAnswers:0,
+        incorrectAnswers:0,
+        maxStreak:0
     });
 
     // Save into the data base
@@ -183,3 +187,31 @@ exports.destroy = (req, res, next) => {
     })
     .catch(error => next(error));
 };
+
+
+/*=========================Mejoras============================*/
+
+exports.showUsers = (req, res, next) => {
+    const sort = req.query.sortBy;
+    let order;
+    if(sort==='correct'){
+        order=[['correctAnswers', 'DESC']];
+    }
+    if(sort==='incorrect'){
+        order=[['incorrectAnswers', 'DESC']];
+    }
+    if(sort==='streak'){
+        order=[['maxStreak', 'DESC']];
+    }
+    let getNext = () => {
+        models.user.findAll({
+            order: order
+        })
+            .then(usuarios => {{
+                res.render('users/topusers', {usuarios});
+            }})
+    };
+    getNext();
+
+};
+//res.render('users/topusers', {usuarios});

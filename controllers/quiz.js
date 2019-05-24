@@ -6,7 +6,6 @@ const paginate = require('../helpers/paginate').paginate;
 
 // Autoload el quiz asociado a :quizId
 exports.load = (req, res, next, quizId) => {
-    req.session.randomPlay = [];
     models.quiz.findByPk(quizId, {
         include: [
             {
@@ -48,7 +47,7 @@ exports.adminOrAuthorRequired = (req, res, next) => {
 
 // GET /quizzes
 exports.index = (req, res, next) => {
-    req.session.randomPlay = [];
+
     let countOptions = {
         where: {}
     };
@@ -235,8 +234,17 @@ exports.check = (req, res, next) => {
 
 // GET /quizzes/randomplay
 exports.randomplay = (req, res, next) => {
-    let score = req.session.randomPlay.length || 0;
-    const resolved = req.session.randomPlay || [];
+    const inicio = req.query.inicio;
+    if(inicio){
+        req.session.scoreSession=0;
+        req.session.randomPlay = [];
+    }else{
+        req.session.scoreSession = req.session.scoreSession || 0;
+        req.session.randomPlay = req.session.randomPlay || [];
+    }
+    let score = req.session.scoreSession;
+    const resolved = req.session.randomPlay;
+
 
     let playnext = () => {
         const whereOpt = {'id': {[Sequelize.Op.notIn]: resolved}};
@@ -253,6 +261,7 @@ exports.randomplay = (req, res, next) => {
                 if(!quiz) {
                     console.log('Nada que preguntar');
                     req.session.randomPlay = [];
+                    req.session.scoreSession = 0;
                     res.render("quizzes/random_nomore", {score});
                     return;
                 }
@@ -272,26 +281,44 @@ exports.randomplay = (req, res, next) => {
 // GET /quizzes/randomcheck
 exports.randomcheck = (req, res, next) => {
     let result;
-    let score = req.session.randomPlay.length;
+    let score = req.session.scoreSession;
     const {quiz, query} = req;
     let id = quiz.id;
     let answer = query.answer;
+    const userId = req.session.user.id;
+
     if (answer === quiz.answer){
         result = true;
+        req.session.scoreSession++;
     }else{
         result = false;
-        score = req.session.randomPlay.length-1;
         req.session.randomPlay = [];
     }
+    score = req.session.scoreSession;
 
-    res.render('quizzes/random_result', {result, score,answer});
+    models.user.findByPk(userId)
+        .then(user=>{
+           if(result){
+               user.correctAnswers++;
+               if(score>user.maxStreak){
+                   user.maxStreak=score;
+               }
+           }else{
+               user.incorrectAnswers++;
+               req.session.scoreSession=0;
+           }
+           user.save({fields: ["correctAnswers","incorrectAnswers","maxStreak"]})
+               .then(()=> res.render('quizzes/random_result', {result, score,answer}))
+               .catch(Sequelize.ValidationError, error => {
+                   req.flash('error', 'Error:');
+                   error.errors.forEach(({message}) => req.flash('error', message));
+               })
+               .catch(error => next(error));
+        });
+
 };
 
 
 
 /*=========================Mejoras============================*/
 
-exports.search = (req,res, next) => {
-    let {search} = req;
-    console.log("imprimir" + search);
-};

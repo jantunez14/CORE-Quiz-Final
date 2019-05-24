@@ -2,7 +2,6 @@
 const crypt = require('../helpers/crypt');
 
 // Definition of the User model:
-
 module.exports = function (sequelize, DataTypes) {
     const User = sequelize.define('user', {
             username: {
@@ -27,8 +26,20 @@ module.exports = function (sequelize, DataTypes) {
                 defaultValue: false
             },
             accepted: {
-              type:DataTypes.BOOLEAN,
-              defaultValue: false
+                type: DataTypes.BOOLEAN,
+                defaultValue: false
+            },
+            correctAnswers:{
+                type: DataTypes.INTEGER,
+                defaultValue: 0
+            },
+            incorrectAnswers:{
+                type: DataTypes.INTEGER,
+                defaultValue: 0
+            },
+            maxStreak:{
+                type: DataTypes.INTEGER,
+                defaultValue: 0
             }
         });
 

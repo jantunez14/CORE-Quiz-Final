@@ -158,9 +158,10 @@ router.put('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)',
     quizController.adminOrAuthorRequired,
     tipController.update);
 
-// Mejoras
-router.get('/search/:keyword', quizController.search);
 
+/*=====================Mejoras=====================*/
+
+router.get('/users/topUsers', userController.showUsers);
 
 
 module.exports = router;

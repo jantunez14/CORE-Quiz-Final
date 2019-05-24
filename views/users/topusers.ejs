@@ -1,0 +1,29 @@
+<h1>Top users</h1>
+
+
+Sort by:
+
+
+
+
+<table border="1">
+    <tr>
+        <th>Username</th>
+        <th><a href="/users/topUsers?sortBy=correct">Correct answers</a></th>
+        <th><a href="/users/topUsers?sortBy=incorrect">Incorrect answers</a></th>
+        <th><a href="/users/topUsers?sortBy=streak">Streak</a></th>
+    </tr>
+
+    <% for(var i in usuarios){ %>
+        <tr>
+            <td> <%= usuarios[i].username %> </td>
+            <td> <%= usuarios[i].correctAnswers %> </td>
+            <td> <%= usuarios[i].incorrectAnswers %> </td>
+            <td> <%= usuarios[i].maxStreak %> </td>
+        </tr>
+
+    <% } %>
+
+
+</table>
+
