@@ -232,9 +232,19 @@ exports.check = (req, res, next) => {
 };
 
 
+/*=========================================Mejoras============================================*/
+/**
+ * Conseguido que al refrescar la página no vaya marcando los quizzes como jugados sin
+ * contestar de nuevo. Tampoco suma los puntos si se le manda mas de una vez la misma respuesta
+ * @param req
+ * @param res
+ * @param next
+ */
+
 // GET /quizzes/randomplay
 exports.randomplay = (req, res, next) => {
     const inicio = req.query.inicio;
+    req.session.flag = false;
     if(inicio){
         req.session.scoreSession=0;
         req.session.randomPlay = [];
@@ -265,12 +275,12 @@ exports.randomplay = (req, res, next) => {
                     res.render("quizzes/random_nomore", {score});
                     return;
                 }
-                resolved.push(quiz.id);
                 const {query} = req;
                 const answer = query.answer || '';
 
                 req.session.randomPlay = resolved;
-                res.render('quizzes/random_play',{quiz,answer,score});
+                req.session.flag = true;
+                res.render('quizzes/random_play',{quiz,answer,score,req});
             });
     };
     playnext();
@@ -280,44 +290,51 @@ exports.randomplay = (req, res, next) => {
 
 // GET /quizzes/randomcheck
 exports.randomcheck = (req, res, next) => {
-    let result;
+    req.session.result = req.session.result || false;
+    let result = req.session.result;
     let score = req.session.scoreSession;
     const {quiz, query} = req;
     let id = quiz.id;
     let answer = query.answer;
 
+    if(req.session.flag) {
+        req.session.flag = false;
+        if (answer === quiz.answer) {
+            result = true;
+            req.session.scoreSession++;
+            req.session.randomPlay.push(id);
+        } else {
+            result = false;
+            req.session.randomPlay = [];
+        }
+        req.session.result = result;
+        score = req.session.scoreSession;
 
-    if (answer === quiz.answer){
-        result = true;
-        req.session.scoreSession++;
-    }else{
-        result = false;
-        req.session.randomPlay = [];
-    }
-    score = req.session.scoreSession;
 
-
-    if(req.session.user) {
-        const userId = req.session.user.id;
-        models.user.findByPk(userId)
-            .then(user => {
-                if (result) {
-                    user.correctAnswers++;
-                    if (score > user.maxStreak) {
-                        user.maxStreak = score;
+        if (req.session.user) {
+            const userId = req.session.user.id;
+            models.user.findByPk(userId)
+                .then(user => {
+                    if (result) {
+                        user.correctAnswers++;
+                        if (score > user.maxStreak) {
+                            user.maxStreak = score;
+                        }
+                    } else {
+                        user.incorrectAnswers++;
+                        req.session.scoreSession = 0;
                     }
-                } else {
-                    user.incorrectAnswers++;
-                    req.session.scoreSession = 0;
-                }
-                user.save({fields: ["correctAnswers", "incorrectAnswers", "maxStreak"]})
-                    .then(() => res.render('quizzes/random_result', {result, score, answer}))
-                    .catch(Sequelize.ValidationError, error => {
-                        req.flash('error', 'Error:');
-                        error.errors.forEach(({message}) => req.flash('error', message));
-                    })
-                    .catch(error => next(error));
-            });
+                    user.save({fields: ["correctAnswers", "incorrectAnswers", "maxStreak"]})
+                        .then(() => res.render('quizzes/random_result', {result, score, answer}))
+                        .catch(Sequelize.ValidationError, error => {
+                            req.flash('error', 'Error:');
+                            error.errors.forEach(({message}) => req.flash('error', message));
+                        })
+                        .catch(error => next(error));
+                });
+        } else {
+            res.render('quizzes/random_result', {result, score, answer});
+        }
     }else{
         res.render('quizzes/random_result', {result, score, answer});
     }
@@ -325,5 +342,5 @@ exports.randomcheck = (req, res, next) => {
 
 
 
-/*=========================Mejoras============================*/
+
 

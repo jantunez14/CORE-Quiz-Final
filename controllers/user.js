@@ -189,7 +189,8 @@ exports.destroy = (req, res, next) => {
 };
 
 
-/*=========================Mejoras============================*/
+/*==============================Mejoras=================================*/
+
 
 exports.showUsers = (req, res, next) => {
 
@@ -231,12 +232,29 @@ exports.showUsers = (req, res, next) => {
     }
 
     let getNext = () => {
-        models.user.findAll({
-            order: order
-        })
-            .then(usuarios => {{
-                res.render('users/topusers', {usuarios});
-            }})
+        models.user.findAll()
+            .then((users) =>{
+                for (let user in users){
+                    if(!users[user].correctAnswers){
+                        users[user].correctAnswers=0;
+                    }
+                    if(!users[user].incorrectAnswers){
+                        users[user].incorrectAnswers=0;
+                    }
+                    if(!users[user].maxStreak){
+                        users[user].maxStreak=0;
+                    }
+                    users[user].save({fields: ["correctAnswers", "incorrectAnswers", "maxStreak"]});
+                }
+            })
+            .then(() => {
+                models.user.findAll({
+                    order: order
+                }).then(usuarios => {{
+                    res.render('users/topusers', {usuarios});
+                }});
+            });
+
     };
     getNext();
 

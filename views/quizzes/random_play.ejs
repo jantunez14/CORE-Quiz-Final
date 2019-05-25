@@ -13,4 +13,37 @@
                   value=""	placeholder="Answer"	autocomplete="off"/>
         <input	type="submit"	class="itemNarrow"	id="send"	value="Check">
     </div>
+
+    <% var tips = quiz.tips; %>
+    <% var quizId = quiz.id; %>
+    <% var quizAuthorId = quiz.authorId; %>
+
+
+    <ul>
+        <% for (var i in tips) { %>
+            <% var tip = tips[i]; %>
+
+            <% var accepted = tip.accepted; %>
+
+            <% if (accepted) { %>
+
+                <li>
+                    <%= tip.text %>
+
+                    (by <span class="autor"><%= tip.author.username %></span>)
+
+                </li>
+            <% } %>
+
+        <% } %>
+    </ul>
+
+
+
+
+
+
+
+
+
 </form>
