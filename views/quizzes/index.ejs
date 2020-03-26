@@ -7,7 +7,7 @@
 </div>
 
 <h1>
-    <%= title || "Questions" %>:
+   Preguntas
 </h1>
 
 <table>
@@ -15,7 +15,7 @@
     <% var quiz = quizzes[i]; %>
     <tr>
         <td>
-            <a href="/quizzes/<%= quiz.id %>/play"><%= quiz.question %></a>
+            <%= quiz.question %>
         </td>
         <td colspan="2">
             <small> (by <%= quiz.author ? quiz.author.username : "Anonymous" %>) </small>
@@ -26,9 +26,6 @@
 
                 <td>
                     <a href="/quizzes/<%= quiz.id %>"class="button">show</a>
-                </td>
-                <td>
-                    <a href="/quizzes/<%= quiz.id %>/edit"class="button">edit</a>
                 </td>
                 <td>
                     <a href="/quizzes/<%= quiz.id %>?_method=DELETE"

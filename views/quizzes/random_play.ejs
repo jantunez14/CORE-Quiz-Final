@@ -1,16 +1,20 @@
 <h1>
-    Random	Play:
+    Juego aleatorio:
 </h1>
 <div>
-    Successful	answers	=	<span	id="score"><%=	score	%></span>
+    Respuestas correctas	=	<span	id="score"><%=	score	%></span>
 </div>
 <form	method="get"	action="/quizzes/randomcheck/<%=  quiz.id	%>">
     <p>
-        Question:	<b><%=	quiz.question	%></b>
+        Pregunta:	<b><%=	quiz.question	%></b>
     </p>
     <div	class="wideRow">
-        <input	type="text"	class="itemWide"	id="answer"	name="answer"
-                  value=""	placeholder="Answer"	autocomplete="off"/>
+        <select class="itemNarrow" default="Respuesta" id="answer" name="answer">
+            <option value="sin contestar" selected></option>
+            <option value="<%= answers[0] %>"><%= answers[0] %></option>
+            <option value="<%= answers[1] %>"><%= answers[1] %></option>
+            <option value="<%= answers[2] %>"><%= answers[2] %></option>
+        </select>
         <input	type="submit"	class="itemNarrow"	id="send"	value="Check">
     </div>
 

@@ -47,10 +47,11 @@ router.get('/', (req, res, next) => {
 });
 
 // Author page.
+/*
 router.get('/author', (req, res, next) => {
   res.render('author');
 });
-
+*/
 
 // Autoload for routes using :quizId
 router.param('quizId', quizController.load);
@@ -112,9 +113,11 @@ router.get('/quizzes/:quizId(\\d+)',
     quizController.show);
 router.get('/quizzes/new',
     sessionController.loginRequired,
+    sessionController.adminRequired,
     quizController.new);
 router.post('/quizzes',
     sessionController.loginRequired,
+    sessionController.adminRequired,
     quizController.create);
 router.get('/quizzes/:quizId(\\d+)/edit',
     sessionController.loginRequired,
@@ -129,11 +132,12 @@ router.delete('/quizzes/:quizId(\\d+)',
     quizController.adminOrAuthorRequired,
     quizController.destroy);
 
+/*
 router.get('/quizzes/:quizId(\\d+)/play',
     quizController.play);
 router.get('/quizzes/:quizId(\\d+)/check',
     quizController.check);
-
+*/
 router.get('/quizzes/randomplay',                   quizController.randomplay);
 router.get('/quizzes/randomcheck/:quizId(\\d+)',    quizController.randomcheck);
 

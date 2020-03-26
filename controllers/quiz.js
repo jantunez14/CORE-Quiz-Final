@@ -125,18 +125,20 @@ exports.new = (req, res, next) => {
 // POST /quizzes/create
 exports.create = (req, res, next) => {
 
-    const {question, answer} = req.body;
+    const {question, answer1, answer2, answer3} = req.body;
 
     const authorId = req.session.user && req.session.user.id || 0;
 
     const quiz = models.quiz.build({
         question,
-        answer,
+        answer1,
+        answer2,
+        answer3,
         authorId
     });
 
     // Saves only the fields question and answer into the DDBB
-    quiz.save({fields: ["question", "answer", "authorId"]})
+    quiz.save({fields: ["question", "answer1", "answer2", "answer3", "authorId"]})
     .then(quiz => {
         req.flash('success', 'Quiz created successfully.');
         res.redirect('/quizzes/' + quiz.id);
@@ -276,11 +278,16 @@ exports.randomplay = (req, res, next) => {
                     return;
                 }
                 const {query} = req;
-                const answer = query.answer || '';
+                const answer1 = quiz.answer1 || '';
+                const answer2 = quiz.answer2 || '';
+                const answer3 = quiz.answer3 || '';
+
+                var answers = [answer1,answer2,answer3];
+                answers = answers.sort(() => {return Math.random()-0.5});
 
                 req.session.randomPlay = resolved;
                 req.session.flag = true;
-                res.render('quizzes/random_play',{quiz,answer,score,req});
+                res.render('quizzes/random_play',{quiz,answers,score,req});
             });
     };
     playnext();
@@ -295,11 +302,12 @@ exports.randomcheck = (req, res, next) => {
     let score = req.session.scoreSession;
     const {quiz, query} = req;
     let id = quiz.id;
+    let correctAnswer = quiz.answer1;
     let answer = query.answer;
 
     if(req.session.flag) {
         req.session.flag = false;
-        if (answer === quiz.answer) {
+        if (answer === quiz.answer1) {
             result = true;
             req.session.scoreSession++;
             req.session.randomPlay.push(id);
@@ -322,10 +330,11 @@ exports.randomcheck = (req, res, next) => {
                         }
                     } else {
                         user.incorrectAnswers++;
-                        req.session.scoreSession = 0;
                     }
                     user.save({fields: ["correctAnswers", "incorrectAnswers", "maxStreak"]})
-                        .then(() => res.render('quizzes/random_result', {result, score, answer}))
+                        .then(() => {
+                            res.render('quizzes/random_result', {result, score, correctAnswer, answer});
+                        })
                         .catch(Sequelize.ValidationError, error => {
                             req.flash('error', 'Error:');
                             error.errors.forEach(({message}) => req.flash('error', message));
@@ -333,10 +342,12 @@ exports.randomcheck = (req, res, next) => {
                         .catch(error => next(error));
                 });
         } else {
-            res.render('quizzes/random_result', {result, score, answer});
+            res.render('quizzes/random_result', {result, score, answer, correctAnswer});
+            return;
         }
     }else{
-        res.render('quizzes/random_result', {result, score, answer});
+        // Tramposillo //
+        res.render('quizzes/tramposillo');
     }
 };
 

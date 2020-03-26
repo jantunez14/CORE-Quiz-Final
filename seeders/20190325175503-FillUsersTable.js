@@ -9,7 +9,7 @@ module.exports = {
         return queryInterface.bulkInsert('users', [
             {
                 username: 'admin',
-                password: crypt.encryptPassword('1234', 'aaaa'),
+                password: crypt.encryptPassword('20pepeCatequesis20', 'aaaa'),
                 salt: 'aaaa',
                 isAdmin: true,
                 createdAt: new Date(), updatedAt: new Date(),

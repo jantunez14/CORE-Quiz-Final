@@ -16,7 +16,15 @@ module.exports = {
                     type: Sequelize.STRING,
                     validate: {notEmpty: {msg: "Question must not be empty."}}
                 },
-                answer: {
+                answer1: {
+                    type: Sequelize.STRING,
+                    validate: {notEmpty: {msg: "Answer must not be empty."}}
+                },
+                answer2: {
+                    type: Sequelize.STRING,
+                    validate: {notEmpty: {msg: "Answer must not be empty."}}
+                },
+                answer3: {
                     type: Sequelize.STRING,
                     validate: {notEmpty: {msg: "Answer must not be empty."}}
                 },

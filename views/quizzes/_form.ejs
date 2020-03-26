@@ -1,13 +1,23 @@
 
 <div class="wideRow">
-<label for="preg"  class="itemNarrow">Question:</label>
-<input type="text" class="itemWide" id="preg" name="question" value="<%= quiz.question %>" placeholder="Question" autocomplete="off"/>
+    <label for="preg"  class="itemNarrow">Question:</label>
+    <input type="text" class="itemWide" id="preg" name="question" value="<%= quiz.question %>" placeholder="Question" autocomplete="off"/>
 </div>
 
 
 <div class="wideRow">
-<label for="resp"  class="itemNarrow">Answer:</label>
-<input type="text" class="itemWide" id="resp" name="answer" value="<%= quiz.answer %>" placeholder="Answer" autocomplete="off"/>
+    <label for="resp"  class="itemNarrow">Respuesta correcta:</label>
+    <input type="text" class="itemWide" id="resp" name="answer1" value="<%= quiz.answer1 %>" placeholder="Respuesta correcta" autocomplete="off"/>
+</div>
+
+<div class="wideRow">
+    <label for="resp"  class="itemNarrow">Respuesta incorrecta 1:</label>
+    <input type="text" class="itemWide" id="resp" name="answer2" value="<%= quiz.answer2 %>" placeholder="Respuesta incorrecta 1" autocomplete="off"/>
+</div>
+
+<div class="wideRow">
+    <label for="resp"  class="itemNarrow">Respuesta incorrecta 2:</label>
+    <input type="text" class="itemWide" id="resp" name="answer3" value="<%= quiz.answer3 %>" placeholder="Respuesta incorrecta 2" autocomplete="off"/>
 </div>
 
 <br/>
